@@ -3,18 +3,30 @@
 public class BlockController : MonoBehaviour
 {
     [SerializeField] AudioClip BreakeSound;
-    [SerializeField] GameObject BlockParticleEffect;
+    [SerializeField] GameObject BlockParticleEffect;    
+    [SerializeField] public int Blockleben;
+    [SerializeField] Sprite[] hitSprites;
     LevelController level;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         AudioSource.PlayClipAtPoint(BreakeSound, Camera.main.transform.position);
-        
-        Destroy(gameObject);
-        Debug.Log(collision.gameObject.name);
         ShowEffect();
-        var gameStatus = FindObjectOfType<GameStatus>();
-        gameStatus.Scorecalculador();
-        level.DestroyBlock();
+        if (tag == "breakable")
+        {
+            Blockleben--;            
+            if (Blockleben <= 0)
+            {                
+                
+                var gameStatus = FindObjectOfType<GameStatus>();
+                gameStatus.Scorecalculador();
+                Destroy(gameObject);
+            } 
+            else
+            {
+                ShowNextHitSprite(); 
+            }
+        }
+        
     }
 
 
@@ -27,5 +39,9 @@ public class BlockController : MonoBehaviour
     private void ShowEffect()
     {
         Instantiate(BlockParticleEffect, transform.position, transform.rotation);
+    }
+    private void ShowNextHitSprite()
+    {
+        GetComponent<SpriteRenderer>().sprite = hitSprites[Blockleben -1];
     }
 }
